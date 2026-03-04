@@ -87,6 +87,11 @@ function getIconFile(platform) {
 // ROUTES
 // ============================================================================
 
+// GET / - Landing page
+app.get('/', viewLimiter, (req, res) => {
+   res.render('index');
+});
+
 // POST /api/session — Mobile app creates a session
 // Body: { sessionId, token, profile }
 app.post('/api/session', sessionCreateLimiter, (req, res) => {
