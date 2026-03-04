@@ -1,0 +1,307 @@
+/* ============================================================================
+   SWAP Web — Design System
+   Mirrors mobile app: colors.dart + typography.dart
+   ============================================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
+
+/* ---------- Reset & Base ---------- */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background-color: #FFFFFF;
+  color: #000000;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+}
+
+/* ---------- Colors (from colors.dart) ---------- */
+:root {
+  --main-bg:        #FFFFFF;
+  --button-bg:      #1E1E1E;
+  --delete-bg:      #EC221F;
+  --open-bg:        #806CF1;
+  --input-bg:       #F3F3F3;
+  --card-bg:        #D9D9D9;
+  --main-text:      #000000;
+  --secondary-text: #666666;
+  --light-text:     #FFFFFF;
+  --success-green:  #1EF799;
+  --check-green:    #00C853;
+  --disabled:       #BDBDBD;
+
+  /* Social brand colors */
+  --instagram:  #E1306C;
+  --discord:    #5865F2;
+  --github:     #181717;
+  --twitter:    #000000;
+  --tiktok:     #000000;
+  --snapchat:   #FFFC00;
+  --phone:      #4DB6AC;
+  --email:      #4FC3F7;
+}
+
+/* ---------- Layout ---------- */
+.page-container {
+  width: 100%;
+  max-width: 480px;
+  min-height: 100vh;
+  padding: 24px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ---------- Header ---------- */
+.header {
+  text-align: center;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.header__title {
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  word-spacing: 4px;
+  color: var(--main-text);
+}
+
+.header__name {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--main-text);
+  margin-top: 4px;
+  text-transform: uppercase;
+}
+
+/* ---------- Section Label ---------- */
+.section-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--main-text);
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+/* ---------- Social Icons Grid ---------- */
+.social-section {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.social-section__title {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--secondary-text);
+  margin-bottom: 8px;
+}
+
+.social-icons-row {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.social-icon {
+  width: 52px;
+  height: 52px;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+  opacity: 0.6;
+}
+
+.social-icon:hover {
+  transform: scale(1.1);
+}
+
+.social-icon.has-data {
+  opacity: 1;
+}
+
+.social-icon.selected {
+  opacity: 1;
+  transform: scale(1.15);
+}
+
+.social-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Checkmark badge */
+.social-icon__badge {
+  position: absolute;
+  right: -6px;
+  bottom: -6px;
+  width: 18px;
+  height: 18px;
+  background-color: var(--check-green);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.social-icon__badge svg {
+  width: 14px;
+  height: 14px;
+  fill: white;
+}
+
+/* ---------- Username Display + Open Button ---------- */
+.username-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 0 24px;
+  margin-top: 24px;
+}
+
+.username-input {
+  flex: 1;
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--main-text);
+  background-color: var(--input-bg);
+  border: none;
+  border-radius: 12px;
+  padding: 14px 16px;
+  outline: none;
+}
+
+.username-input::placeholder {
+  color: var(--disabled);
+}
+
+.btn {
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--light-text);
+  border: none;
+  border-radius: 12px;
+  padding: 14px 20px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: opacity 0.15s ease, transform 0.1s ease;
+  text-decoration: none;
+}
+
+.btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn--open {
+  background-color: var(--open-bg);
+  min-width: 100px;
+  justify-content: center;
+}
+
+.btn--open:disabled,
+.btn--open.disabled {
+  background-color: var(--disabled);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.btn--done {
+  background-color: var(--button-bg);
+  width: 150px;
+  justify-content: center;
+  margin-top: auto;
+}
+
+.btn__icon {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+/* ---------- Spacer ---------- */
+.spacer {
+  flex: 1;
+  min-height: 40px;
+}
+
+/* ---------- Error Page ---------- */
+.error-container {
+  text-align: center;
+  padding: 80px 24px;
+}
+
+.error-container__title {
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: var(--main-text);
+  margin-bottom: 16px;
+}
+
+.error-container__message {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--secondary-text);
+  line-height: 1.5;
+}
+
+.error-container__icon {
+  font-size: 64px;
+  margin-bottom: 24px;
+  opacity: 0.5;
+}
+
+/* ---------- Branding Footer ---------- */
+.footer {
+  text-align: center;
+  padding: 24px 0 8px;
+  margin-top: 24px;
+}
+
+.footer__text {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--disabled);
+  letter-spacing: 1px;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 360px) {
+  .social-icon {
+    width: 42px;
+    height: 42px;
+  }
+
+  .header__title {
+    font-size: 24px;
+  }
+
+  .header__name {
+    font-size: 20px;
+  }
+}
