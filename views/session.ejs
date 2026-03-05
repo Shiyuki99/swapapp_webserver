@@ -1,106 +1,96 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="View swapped social profiles from SWAP">
-  <title>SWAPPED — <%= profile.name %></title>
+  <title>SWAPPED — <%= profile.name %>
+  </title>
+  <link rel="icon" href="/favicon.png" type="image/png">
   <link rel="stylesheet" href="/css/style.css">
 </head>
+
 <body>
   <div class="page-container">
 
     <!-- Header -->
     <div class="header">
       <h1 class="header__title">SWAPPED</h1>
-      <p class="header__name"><%= profile.name %></p>
+      <p class="header__name">
+        <%= profile.name %>
+      </p>
     </div>
 
     <!-- Swapped Links Label -->
     <p class="section-label">SWAPPED LINKS:</p>
 
     <!-- Socials Section -->
-    <% if (activeSocials.length > 0) { %>
-    <div class="social-section">
-      <p class="social-section__title">Socials</p>
-      <div class="social-icons-row">
-        <% activeSocials.forEach(function(s, i) { %>
-          <div
-            class="social-icon has-data<%= i === 0 ? ' selected' : '' %>"
-            id="icon-<%= s.platform %>"
-            data-platform="<%= s.platform %>"
-            data-username="<%= s.username %>"
-            data-url="<%= s.profileLink || s.url %>"
-            onclick="selectPlatform(this)"
-          >
-            <img src="/icons/<%= s.icon %>" alt="<%= s.platform %>">
-            <div class="social-icon__badge">
-              <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+    <% if (activeSocials.length> 0) { %>
+      <div class="social-section">
+        <p class="social-section__title">Socials</p>
+        <div class="social-icons-row">
+          <% activeSocials.forEach(function(s, i) { %>
+            <div class="social-icon has-data<%= i === 0 ? ' selected' : '' %>" id="icon-<%= s.platform %>"
+              data-platform="<%= s.platform %>" data-username="<%= s.username %>"
+              data-url="<%= s.profileLink || s.url %>" onclick="selectPlatform(this)">
+              <img src="/icons/<%= s.icon %>" alt="<%= s.platform %>">
+              <div class="social-icon__badge">
+                <svg viewBox="0 0 24 24">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+                </svg>
+              </div>
+            </div>
+            <% }); %>
+        </div>
+      </div>
+      <% } %>
+
+        <!-- Contact Section -->
+        <% if (activeContacts.length> 0) { %>
+          <div class="social-section">
+            <p class="social-section__title">Contact</p>
+            <div class="social-icons-row">
+              <% activeContacts.forEach(function(c) { %>
+                <div class="social-icon has-data" id="icon-<%= c.platform %>" data-platform="<%= c.platform %>"
+                  data-username="<%= c.username %>" data-url="<%= c.url %>" onclick="selectPlatform(this)">
+                  <img src="/icons/<%= c.icon %>" alt="<%= c.platform %>">
+                  <div class="social-icon__badge">
+                    <svg viewBox="0 0 24 24">
+                      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+                    </svg>
+                  </div>
+                </div>
+                <% }); %>
             </div>
           </div>
-        <% }); %>
-      </div>
-    </div>
-    <% } %>
+          <% } %>
 
-    <!-- Contact Section -->
-    <% if (activeContacts.length > 0) { %>
-    <div class="social-section">
-      <p class="social-section__title">Contact</p>
-      <div class="social-icons-row">
-        <% activeContacts.forEach(function(c) { %>
-          <div
-            class="social-icon has-data"
-            id="icon-<%= c.platform %>"
-            data-platform="<%= c.platform %>"
-            data-username="<%= c.username %>"
-            data-url="<%= c.url %>"
-            onclick="selectPlatform(this)"
-          >
-            <img src="/icons/<%= c.icon %>" alt="<%= c.platform %>">
-            <div class="social-icon__badge">
-              <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+            <!-- Username + Open Button -->
+            <div class="username-row">
+              <input type="text" id="usernameDisplay" class="username-input" placeholder="@Username" readonly>
+              <a id="openBtn" class="btn btn--open disabled" href="#" target="_blank" rel="noopener noreferrer">
+                <svg class="btn__icon" viewBox="0 0 24 24">
+                  <path
+                    d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z" />
+                </svg>
+                OPEN
+              </a>
             </div>
-          </div>
-        <% }); %>
-      </div>
-    </div>
-    <% } %>
 
-    <!-- Username + Open Button -->
-    <div class="username-row">
-      <input
-        type="text"
-        id="usernameDisplay"
-        class="username-input"
-        placeholder="@Username"
-        readonly
-      >
-      <a
-        id="openBtn"
-        class="btn btn--open disabled"
-        href="#"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        <svg class="btn__icon" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg>
-        OPEN
-      </a>
-    </div>
+            <!-- Spacer -->
+            <div class="spacer"></div>
 
-    <!-- Spacer -->
-    <div class="spacer"></div>
-
-    <!-- Footer -->
-    <div class="footer">
-      <p class="footer__text">SWAP</p>
-    </div>
+            <!-- Footer -->
+            <div class="footer">
+              <p class="footer__text">SWAP</p>
+            </div>
 
   </div>
 
   <script>
     // Initialize with the first available social
-    (function() {
+    (function () {
       const firstIcon = document.querySelector('.social-icon.has-data');
       if (firstIcon) {
         selectPlatform(firstIcon);
@@ -145,4 +135,5 @@
     }
   </script>
 </body>
+
 </html>
