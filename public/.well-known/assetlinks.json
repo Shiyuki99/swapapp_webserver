@@ -7,7 +7,8 @@
          "namespace": "android_app",
          "package_name": "com.shiyuki.swap",
          "sha256_cert_fingerprints": [
-            "AB:4A:47:22:94:9F:B1:7D:0D:F8:A7:C1:7B:A8:5E:F3:3F:02:9C:8C:A4:31:F4:41:E6:44:3F:4E:E4:1C:36:90"
+            "AB:4A:47:22:94:9F:B1:7D:0D:F8:A7:C1:7B:A8:5E:F3:3F:02:9C:8C:A4:31:F4:41:E6:44:3F:4E:E4:1C:36:90",
+            "8F:9F:39:73:C1:1C:89:BA:63:8F:DB:69:9F:23:B2:56:33:C0:DC:92:53:F1:0F:B5:81:12:77:FA:EF:6C:C9:7D"
          ]
       }
    }

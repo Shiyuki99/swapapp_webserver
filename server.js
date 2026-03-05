@@ -29,7 +29,7 @@ setInterval(() => {
 // MIDDLEWARE
 // ============================================================================
 app.use(express.json({ limit: '2kb' }));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public'), { dotfiles: 'allow' }));
 
 // Rate limiters (per IP)
 // Session creation: stricter — max 10 per 15 minutes
