@@ -28,7 +28,7 @@ setInterval(() => {
 // ============================================================================
 // MIDDLEWARE
 // ============================================================================
-app.use(express.json({ limit: '2kb' }));
+app.use(express.json({ limit: '20kb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Rate limiters (per IP)
@@ -84,6 +84,72 @@ function getIconFile(platform) {
 }
 
 // ============================================================================
+// PROFILE VALIDATION & SANITIZATION
+// ============================================================================
+function validateAndSanitizeProfile(rawProfile) {
+   if (!rawProfile || typeof rawProfile !== 'object' || Array.isArray(rawProfile)) {
+      throw new Error('Profile must be a JSON object');
+   }
+
+   // 1. Validate ID
+   const id = typeof rawProfile.id === 'string' ? rawProfile.id.trim().substring(0, 100) : '';
+
+   // 2. Validate Name
+   const name = typeof rawProfile.name === 'string' ? rawProfile.name.trim().substring(0, 50) : '';
+   if (!name) {
+      throw new Error('Profile must have a valid non-empty name');
+   }
+
+   // 3. Validate Profile Name (optional, default to Unknown)
+   const profileName = typeof rawProfile.profileName === 'string'
+      ? rawProfile.profileName.trim().substring(0, 50)
+      : 'Unknown';
+
+   // 4. Validate Social Links
+   const rawSocials = rawProfile.socialLinks;
+   if (!rawSocials || typeof rawSocials !== 'object' || Array.isArray(rawSocials)) {
+      throw new Error('Profile must include a valid socialLinks object');
+   }
+
+   const cleanSocialLinks = {};
+   let hasAnyValidSocial = false;
+
+   // Cap the raw object to prevent memory abuse from thousands of keys
+   const MAX_KEYS = 50;
+   let keysProcessed = 0;
+
+   // Only allow strings, limit lengths
+   for (const [key, value] of Object.entries(rawSocials)) {
+      if (keysProcessed++ > MAX_KEYS) break;
+
+      if (typeof key === 'string' && typeof value === 'string') {
+         const cleanKey = key.trim().substring(0, 30);
+         const cleanValue = value.trim().substring(0, 2000); // Max URL length approx
+
+         if (cleanKey && cleanValue) {
+            cleanSocialLinks[cleanKey] = cleanValue;
+
+            // Check if it's a "real" social entry (not a metadata key)
+            if (!cleanKey.endsWith('_link') && !cleanKey.endsWith('_id')) {
+               hasAnyValidSocial = true;
+            }
+         }
+      }
+   }
+
+   if (!hasAnyValidSocial) {
+      throw new Error('Profile must have at least one valid social platform entry');
+   }
+
+   return {
+      id,
+      name,
+      profileName,
+      socialLinks: cleanSocialLinks,
+   };
+}
+
+// ============================================================================
 // ROUTES
 // ============================================================================
 
@@ -103,9 +169,12 @@ app.post('/api/session', sessionCreateLimiter, (req, res) => {
       });
    }
 
-   if (!profile.name || !profile.socialLinks) {
+   let cleanProfile;
+   try {
+      cleanProfile = validateAndSanitizeProfile(profile);
+   } catch (error) {
       return res.status(400).json({
-         error: 'Profile must include name and socialLinks'
+         error: error.message
       });
    }
 
@@ -124,11 +193,11 @@ app.post('/api/session', sessionCreateLimiter, (req, res) => {
    // Store session
    sessions.set(sessionId, {
       token,
-      profile,
+      profile: cleanProfile,
       createdAt: Date.now(),
    });
 
-   console.log(`[SESSION] Created: ${sessionId} for "${profile.name}" (${sessions.size} active)`);
+   console.log(`[SESSION] Created: ${sessionId} for "${cleanProfile.name}" (${sessions.size} active)`);
 
    res.status(201).json({
       success: true,
