@@ -28,7 +28,7 @@ setInterval(() => {
 // ============================================================================
 // MIDDLEWARE
 // ============================================================================
-app.use(express.json({ limit: '20kb' }));
+app.use(express.json({ limit: '2kb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Rate limiters (per IP)
