@@ -26,6 +26,35 @@ setInterval(() => {
 }, 60 * 1000); // Every 1 minute
 
 // ============================================================================
+// ANALYTICS & TRACKING
+// ============================================================================
+const fs = require('fs');
+const statsFile = path.join(__dirname, 'stats.json');
+
+let appStats = {
+   totalSessionsCreated: 0,
+   totalAppOpens: 0,
+   uniqueUsers: {}
+};
+
+if (fs.existsSync(statsFile)) {
+   try {
+      const data = JSON.parse(fs.readFileSync(statsFile, 'utf8'));
+      appStats.totalSessionsCreated = data.totalSessionsCreated || 0;
+      appStats.totalAppOpens = data.totalAppOpens || 0;
+      appStats.uniqueUsers = data.uniqueUsers || {};
+   } catch (err) {
+      console.error('Error loading stats.json:', err);
+   }
+}
+
+function saveStats() {
+   fs.writeFile(statsFile, JSON.stringify(appStats, null, 2), (err) => {
+      if (err) console.error('Error saving stats.json:', err);
+   });
+}
+
+// ============================================================================
 // MIDDLEWARE
 // ============================================================================
 app.use(express.json({ limit: '2kb' }));
@@ -197,6 +226,13 @@ app.post('/api/session', sessionCreateLimiter, (req, res) => {
       createdAt: Date.now(),
    });
 
+   // Update tracking stats
+   appStats.totalSessionsCreated++;
+   if (cleanProfile.name) {
+      appStats.uniqueUsers[cleanProfile.name] = true;
+   }
+   saveStats();
+
    console.log(`[SESSION] Created: ${sessionId} for "${cleanProfile.name}" (${sessions.size} active)`);
 
    res.status(201).json({
@@ -321,6 +357,39 @@ app.delete('/api/session/:sessionId', viewLimiter, (req, res) => {
    res.json({ success: true });
 });
 
+// POST /api/track/open — Mobile app calls this when launched to track overall usage
+app.post('/api/track/open', viewLimiter, (req, res) => {
+   const { userId } = req.body || {};
+
+   appStats.totalAppOpens++;
+   if (userId) {
+      appStats.uniqueUsers[userId] = true;
+   }
+   saveStats();
+
+   res.json({ success: true });
+});
+
+// GET /api/stats — View tracking data (JSON)
+app.get('/api/stats', viewLimiter, (req, res) => {
+   res.json({
+      totalSessionsCreated: appStats.totalSessionsCreated,
+      totalAppOpens: appStats.totalAppOpens,
+      totalUniqueUsers: Object.keys(appStats.uniqueUsers).length
+   });
+});
+
+// GET /stats — View tracking data (UI)
+app.get('/stats', viewLimiter, (req, res) => {
+   res.render('stats', {
+      stats: {
+         totalSessionsCreated: appStats.totalSessionsCreated,
+         totalAppOpens: appStats.totalAppOpens,
+         totalUniqueUsers: Object.keys(appStats.uniqueUsers).length
+      }
+   });
+});
+
 // Health check
 app.get('/health', (req, res) => {
    res.json({ status: 'ok', sessions: sessions.size });
@@ -334,5 +403,7 @@ app.listen(PORT, '0.0.0.0', () => {
    console.log(`  Routes:`);
    console.log(`    POST /api/session          — Create session (from mobile app)`);
    console.log(`    GET  /view/:sessionId       — View profile page`);
-   console.log(`    GET  /api/session/:sessionId — Get session data (JSON)\n`);
+   console.log(`    GET  /api/session/:sessionId — Get session data (JSON)`);
+   console.log(`    POST /api/track/open       — Track app opens`);
+   console.log(`    GET  /api/stats            — View usage statistics\n`);
 });

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>SWAP - Usage Stats</title>
+   <link rel="icon" href="/favicon.png" type="image/png">
+   <style>
+      :root {
+         --bg-color: #0f172a;
+         --text-main: #f8fafc;
+         --text-muted: #94a3b8;
+         --accent: #3b82f6;
+         --accent-hover: #2563eb;
+         --card-bg: rgba(255, 255, 255, 0.03);
+         --card-border: rgba(255, 255, 255, 0.05);
+      }
+
+      body {
+         margin: 0;
+         padding: 0;
+         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+         background-color: var(--bg-color);
+         color: var(--text-main);
+         display: flex;
+         flex-direction: column;
+         min-height: 100vh;
+      }
+
+      main {
+         flex: 1;
+         display: flex;
+         flex-direction: column;
+         align-items: center;
+         justify-content: center;
+         padding: 2rem;
+      }
+
+      .container {
+         width: 100%;
+         max-width: 600px;
+      }
+
+      h1 {
+         font-size: 2.5rem;
+         font-weight: 800;
+         margin-bottom: 2rem;
+         text-align: center;
+         background: linear-gradient(135deg, #60a5fa, #a78bfa);
+         -webkit-background-clip: text;
+         background-clip: text;
+         -webkit-text-fill-color: transparent;
+      }
+
+      .stats-grid {
+         display: grid;
+         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+         gap: 1.5rem;
+      }
+
+      .stat-card {
+         background: var(--card-bg);
+         border: 1px solid var(--card-border);
+         border-radius: 1rem;
+         padding: 2rem;
+         text-align: center;
+         backdrop-filter: blur(10px);
+         transition: transform 0.3s ease, background 0.3s ease;
+      }
+
+      .stat-card:hover {
+         transform: translateY(-5px);
+         background: rgba(255, 255, 255, 0.05);
+      }
+
+      .stat-value {
+         font-size: 3rem;
+         font-weight: 700;
+         margin-bottom: 0.5rem;
+         color: var(--text-main);
+      }
+
+      .stat-label {
+         font-size: 1rem;
+         color: var(--text-muted);
+         text-transform: uppercase;
+         letter-spacing: 0.05em;
+      }
+
+      .updated-time {
+         text-align: center;
+         margin-top: 2rem;
+         color: var(--text-muted);
+         font-size: 0.875rem;
+      }
+   </style>
+</head>
+
+<body>
+   <main>
+      <div class="container">
+         <h1>App Usage Stats</h1>
+
+         <div class="stats-grid">
+            <div class="stat-card">
+               <div class="stat-value">
+                  <%= stats.totalAppOpens || 0 %>
+               </div>
+               <div class="stat-label">Total App Opens</div>
+            </div>
+
+            <div class="stat-card">
+               <div class="stat-value">
+                  <%= stats.totalUniqueUsers || 0 %>
+               </div>
+               <div class="stat-label">Unique Users</div>
+            </div>
+
+            <div class="stat-card">
+               <div class="stat-value">
+                  <%= stats.totalSessionsCreated || 0 %>
+               </div>
+               <div class="stat-label">Sessions Created</div>
+            </div>
+         </div>
+
+         <div class="updated-time">Live usage data continuously tracked.</div>
+      </div>
+   </main>
+</body>
+
+</html>
