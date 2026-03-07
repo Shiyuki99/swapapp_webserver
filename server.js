@@ -54,6 +54,8 @@ function saveStats() {
    });
 }
 
+const LATEST_APP_VERSION = '1.0.0+4'; // Defines current version
+
 // ============================================================================
 // MIDDLEWARE
 // ============================================================================
@@ -112,6 +114,26 @@ function getIconFile(platform) {
    }
 }
 
+// URL validation mimicking the mobile app
+const platformUrlPrefixes = {
+   'instagram': 'instagram.com/',
+   'twitter': 'x.com/',
+   'tiktok': 'tiktok.com/',
+   'snapchat': 'snapchat.com/',
+   'github': 'github.com/',
+   'discord': 'discord.gg/',
+};
+
+function isValidUrlForPlatform(platform, url) {
+   if (!url) return false;
+   // Ensure it's a structural URL if it has a prefix requirement
+   const prefix = platformUrlPrefixes[platform];
+   if (!prefix) {
+      return url.startsWith('http://') || url.startsWith('https://');
+   }
+   return url.includes(prefix);
+}
+
 // ============================================================================
 // PROFILE VALIDATION & SANITIZATION
 // ============================================================================
@@ -156,6 +178,14 @@ function validateAndSanitizeProfile(rawProfile) {
          const cleanValue = value.trim().substring(0, 2000); // Max URL length approx
 
          if (cleanKey && cleanValue) {
+            // Apply strict domain validation if this is a custom uploaded "_link"
+            if (cleanKey.endsWith('_link')) {
+               const basePlatform = cleanKey.replace('_link', '');
+               if (!isValidUrlForPlatform(basePlatform, cleanValue)) {
+                  throw new Error(`Invalid link format for platform: ${basePlatform}`);
+               }
+            }
+
             cleanSocialLinks[cleanKey] = cleanValue;
 
             // Check if it's a "real" social entry (not a metadata key)
@@ -393,6 +423,26 @@ app.get('/stats', viewLimiter, (req, res) => {
 // Health check
 app.get('/health', (req, res) => {
    res.json({ status: 'ok', sessions: sessions.size });
+});
+
+// ============================================================================
+// APP UPDATE ENDPOINTS
+// ============================================================================
+app.get('/api/check-update', (req, res) => {
+   const clientVersion = req.query.version;
+
+   if (!clientVersion || typeof clientVersion !== 'string') {
+      return res.status(400).json({ error: 'Missing or invalid version query parameter' });
+   }
+
+   // Simple string comparison for versions (assuming format aligns with 1.0.0+4)
+   // Normally semver matching handles this, but basic equality suffices for simple bump tracking
+   const updateAvailable = clientVersion !== LATEST_APP_VERSION;
+
+   res.json({
+      updateAvailable: updateAvailable,
+      latestVersion: LATEST_APP_VERSION,
+   });
 });
 
 // ============================================================================
