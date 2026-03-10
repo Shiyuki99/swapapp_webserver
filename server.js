@@ -428,6 +428,32 @@ app.get('/health', (req, res) => {
 // ============================================================================
 // APP UPDATE ENDPOINTS
 // ============================================================================
+
+/**
+ * Parse a version string of the form "X.Y.Z+B" into numeric components.
+ * Returns null if the format is invalid.
+ */
+function parseVersion(versionStr) {
+   const match = versionStr.trim().match(/^(\d+)\.(\d+)\.(\d+)(?:\+(\d+))?$/);
+   if (!match) return null;
+   return {
+      major: parseInt(match[1], 10),
+      minor: parseInt(match[2], 10),
+      patch: parseInt(match[3], 10),
+      build: parseInt(match[4] || '0', 10),
+   };
+}
+
+/**
+ * Returns true if version `a` is strictly older than version `b`.
+ */
+function isOlderVersion(a, b) {
+   if (a.major !== b.major) return a.major < b.major;
+   if (a.minor !== b.minor) return a.minor < b.minor;
+   if (a.patch !== b.patch) return a.patch < b.patch;
+   return a.build < b.build;
+}
+
 app.get('/api/check-update', (req, res) => {
    const clientVersion = req.query.version;
 
@@ -435,12 +461,22 @@ app.get('/api/check-update', (req, res) => {
       return res.status(400).json({ error: 'Missing or invalid version query parameter' });
    }
 
-   // Simple string comparison for versions (assuming format aligns with 1.0.0+4)
-   // Normally semver matching handles this, but basic equality suffices for simple bump tracking
-   const updateAvailable = clientVersion !== LATEST_APP_VERSION;
+   const client = parseVersion(clientVersion);
+   const latest = parseVersion(LATEST_APP_VERSION);
+
+   if (!client || !latest) {
+      // If we can't parse versions, fall back to equality check
+      return res.json({
+         updateAvailable: clientVersion !== LATEST_APP_VERSION,
+         latestVersion: LATEST_APP_VERSION,
+      });
+   }
+
+   // Only prompt for update when the client version is strictly older
+   const updateAvailable = isOlderVersion(client, latest);
 
    res.json({
-      updateAvailable: updateAvailable,
+      updateAvailable,
       latestVersion: LATEST_APP_VERSION,
    });
 });
