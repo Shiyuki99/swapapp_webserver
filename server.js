@@ -54,7 +54,7 @@ function saveStats() {
    });
 }
 
-const LATEST_APP_VERSION = '1.0.0+4'; // Defines current version
+const LATEST_APP_VERSION = '1.0.0+5'; // Defines current version
 
 // ============================================================================
 // MIDDLEWARE
