@@ -34,7 +34,6 @@ const statsFile = path.join(__dirname, 'stats.json');
 let appStats = {
    totalSessionsCreated: 0,
    totalAppOpens: 0,
-   uniqueUsers: {}
 };
 
 if (fs.existsSync(statsFile)) {
@@ -42,7 +41,6 @@ if (fs.existsSync(statsFile)) {
       const data = JSON.parse(fs.readFileSync(statsFile, 'utf8'));
       appStats.totalSessionsCreated = data.totalSessionsCreated || 0;
       appStats.totalAppOpens = data.totalAppOpens || 0;
-      appStats.uniqueUsers = data.uniqueUsers || {};
    } catch (err) {
       console.error('Error loading stats.json:', err);
    }
@@ -258,9 +256,6 @@ app.post('/api/session', sessionCreateLimiter, (req, res) => {
 
    // Update tracking stats
    appStats.totalSessionsCreated++;
-   if (cleanProfile.name) {
-      appStats.uniqueUsers[cleanProfile.name] = true;
-   }
    saveStats();
 
    console.log(`[SESSION] Created: ${sessionId} for "${cleanProfile.name}" (${sessions.size} active)`);
@@ -387,25 +382,11 @@ app.delete('/api/session/:sessionId', viewLimiter, (req, res) => {
    res.json({ success: true });
 });
 
-// POST /api/track/open — Mobile app calls this when launched to track overall usage
-app.post('/api/track/open', viewLimiter, (req, res) => {
-   const { userId } = req.body || {};
-
-   appStats.totalAppOpens++;
-   if (userId) {
-      appStats.uniqueUsers[userId] = true;
-   }
-   saveStats();
-
-   res.json({ success: true });
-});
-
 // GET /api/stats — View tracking data (JSON)
 app.get('/api/stats', viewLimiter, (req, res) => {
    res.json({
       totalSessionsCreated: appStats.totalSessionsCreated,
       totalAppOpens: appStats.totalAppOpens,
-      totalUniqueUsers: Object.keys(appStats.uniqueUsers).length
    });
 });
 
@@ -415,7 +396,6 @@ app.get('/stats', viewLimiter, (req, res) => {
       stats: {
          totalSessionsCreated: appStats.totalSessionsCreated,
          totalAppOpens: appStats.totalAppOpens,
-         totalUniqueUsers: Object.keys(appStats.uniqueUsers).length
       }
    });
 });
@@ -461,6 +441,10 @@ app.get('/api/check-update', (req, res) => {
       return res.status(400).json({ error: 'Missing or invalid version query parameter' });
    }
 
+   // Count every check-update call as an app open (app calls this on launch)
+   appStats.totalAppOpens++;
+   saveStats();
+
    const client = parseVersion(clientVersion);
    const latest = parseVersion(LATEST_APP_VERSION);
 
@@ -490,6 +474,6 @@ app.listen(PORT, '0.0.0.0', () => {
    console.log(`    POST /api/session          — Create session (from mobile app)`);
    console.log(`    GET  /view/:sessionId       — View profile page`);
    console.log(`    GET  /api/session/:sessionId — Get session data (JSON)`);
-   console.log(`    POST /api/track/open       — Track app opens`);
+   console.log(`    GET  /api/check-update     — Check for app updates (tracks opens)`);
    console.log(`    GET  /api/stats            — View usage statistics\n`);
 });

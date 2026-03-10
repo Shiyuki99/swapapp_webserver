@@ -1,10 +1,11 @@
 {
-  "totalSessionsCreated": 20,
+  "totalSessionsCreated": 38,
   "totalAppOpens": 0,
   "uniqueUsers": {
     "0": true,
     "Mohammed Islam FOUDI": true,
     "يويزي": true,
-    "test": true
+    "test": true,
+    "t": true
   }
 }
