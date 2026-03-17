@@ -7,3 +7,6 @@ dist/
 build/
 coveraget/
 stats.json
+fly.toml
+Dockerfile
+.dockerignore
